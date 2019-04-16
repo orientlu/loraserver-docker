@@ -1,7 +1,56 @@
 # See https://www.loraserver.io/lora-gateway-bridge/install/config/ for a full
 # configuration example and documentation.
 
-[backend.mqtt]
-server="tcp://mosquitto:1883"
-username=""
-password=""
+[backend]
+
+# Valid options are:
+#   * semtech_udp
+#   * basic_station
+type="semtech_udp"
+
+  [backend.semtech_udp]
+  udp_bind = "0.0.0.0:1700"
+
+  [backend.basic_station]
+  bind="0.0.0.0:3001"
+  read_timeout="1h"
+
+  # Please refer to the LoRaWAN Regional Parameters specification
+  # for the complete list of common region names.
+  region="EU868"
+
+  # Minimal frequency (Hz).
+  frequency_min=863000000
+
+  # Maximum frequency (Hz).
+  frequency_max=870000000
+
+    # Filters.
+    [backend.basic_station.filters]
+
+    # NetIDs to filter on when receiving uplinks.
+    net_ids=[
+      "000000",
+    ]
+
+    # JoinEUIs to filter on when receiving join-requests.
+    join_euis=[
+      ["0000000000000000", "ffffffffffffffff"],
+    ]
+
+
+[integration]
+# This defines how the MQTT payloads are encoded. Valid options are:
+# * protobuf:  Protobuf encoding (this will become the LoRa Gateway Bridge v3 default)
+# * json:      JSON encoding (easier for debugging, but less compact than 'protobuf')
+marshaler="protobuf"
+
+  [integration.mqtt]
+  event_topic_template="gateway/{{ .GatewayID }}/event/{{ .EventType }}"
+  command_topic_template="gateway/{{ .GatewayID }}/command/#"
+
+  [integration.mqtt.auth]
+  type="generic"
+
+    [integration.mqtt.auth.generic]
+    server="tcp://mosquitto:1883"

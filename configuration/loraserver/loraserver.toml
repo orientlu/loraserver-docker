@@ -76,6 +76,12 @@ server="tcp://mosquitto:1883"
 username=""
 password=""
 
+uplink_topic_template="gateway/{{ .MAC }}/event/up"
+stats_topic_template="gateway/{{ .MAC }}/event/stats"
+ack_topic_template="gateway/{{ .MAC }}/event/ack"
+downlink_topic_template="gateway/{{ .MAC }}/command/down"
+config_topic_template="gateway/{{ .MAC }}/command/config"
+
 [join_server.default]
 server="http://appserver:8003"
 
