@@ -76,9 +76,9 @@ server="tcp://mosquitto:1883"
 username=""
 password=""
 
-uplink_topic_template="gateway/{{ .MAC }}/event/up"
-stats_topic_template="gateway/{{ .MAC }}/event/stats"
-ack_topic_template="gateway/{{ .MAC }}/event/ack"
+uplink_topic_template="gateway/+/event/up"
+stats_topic_template="gateway/+/event/stats"
+ack_topic_template="gateway/+/event/ack"
 downlink_topic_template="gateway/{{ .MAC }}/command/down"
 config_topic_template="gateway/{{ .MAC }}/command/config"
 
