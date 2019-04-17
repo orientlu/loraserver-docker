@@ -6,7 +6,7 @@
 # Valid options are:
 #   * semtech_udp
 #   * basic_station
-type="semtech_udp"
+type="basic_station"
 
   [backend.semtech_udp]
   udp_bind = "0.0.0.0:1700"
