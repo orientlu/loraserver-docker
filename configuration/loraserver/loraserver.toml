@@ -31,7 +31,7 @@ name="EU_863_870"
 #
 # Use this when ony a sub-set of the by default enabled channels are being
 # used. For example when only using the first 8 channels of the US band.
-# 
+#
 # Example:
 # enabled_uplink_channels=[0, 1, 2, 3, 4, 5, 6, 7]
 enabled_uplink_channels=[]
@@ -72,7 +72,8 @@ enabled_uplink_channels=[]
 # max_dr=5
 
 [network_server.gateway.backend.mqtt]
-server="tcp://mosquitto:1883"
+servers=["tcp://mosquitto:1883"]
+uplinkserver="tcp://mosquitto:1883"
 username=""
 password=""
 
@@ -80,4 +81,4 @@ password=""
 server="http://appserver:8003"
 
 [geolocation_server]
-server="geoserver:8005"
+#server="geoserver:8005"

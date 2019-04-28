@@ -1,15 +1,21 @@
 version: "3"
 
+
 services:
   loraserver:
-    image: loraserver/loraserver:2
+    image: orientludocker/loraserver:${run_ver}
     environment:
       - POSTGRESQL.DSN=postgres://loraserver_ns:loraserver_ns@postgresql/loraserver_ns?sslmode=disable
       - REDIS.URL=redis://redis:6379
       - NETWORK_SERVER.BAND.NAME=EU_863_870
-      - NETWORK_SERVER.GATEWAY.BACKEND.MQTT.SERVER=tcp://mosquitto:1883
+      - NETWORK_SERVER.GATEWAY.BACKEND.MQTT.SERVERS=tcp://mosquitto:1883
+      - NETWORK_SERVER.GATEWAY.BACKEND.MQTT.UPLINKSERVER=tcp://mosquitto:1883
       - JOIN_SERVER.DEFAULT.SERVER=http://appserver:8003
-      - GEOLOCATION_SERVER.SERVER=geoserver:8005
+        #- GEOLOCATION_SERVER.SERVER=geoserver:8005
+    depends_on:
+      - redis
+      - postgresql
+      - mosquitto
 
   appserver:
     image: loraserver/lora-app-server:2
@@ -23,32 +29,48 @@ services:
       - APPLICATION_SERVER.EXTERNAL_API.JWT_SECRET=verysecret
 
   gatewaybridge:
-    image: loraserver/lora-gateway-bridge:2
+    image: orientludocker/lora-gateway-bridge:${run_ver}
     ports:
       - 1700:1700/udp
     environment:
-      - BACKEND.MQTT.AUTH.GENERIC.SERVER=tcp://mosquitto:1883
+      - INTEGRATION.MQTT.AUTH.GENERIC.SERVER=tcp://mosquitto:1883
+    depends_on:
+      - mosquitto
+
+  coordinator:
+    image: orientludocker/lora-coordinator:${run_ver}
+    environment:
+      - LORA_COORDINATOR_REDIS_URL=redis://redis:6379
+      - LORA_COORDINATOR_MQTT_SERVERS=tcp://mosquitto:1883
+      - LORA_COORDINATOR_GENERAL_LOG_LEVEL=6
+    depends_on:
+      - redis
+      - mosquitto
 
   geoserver:
     image: loraserver/lora-geo-server:2
     environment:
       - GEO_SERVER.BACKEND.NAME=collos
 
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+      - 1883:1883
+
   postgresql:
     image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
     volumes:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgresqldata:/var/lib/postgresql/data
 
   redis:
     image: redis:4-alpine
+    ports:
+      - 6379:6379
     volumes:
       - redisdata:/data
-
-  mosquitto:
-    image: eclipse-mosquitto
-    ports:
-      - 1883:1883
 
 volumes:
   postgresqldata:

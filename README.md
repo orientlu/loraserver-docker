@@ -4,7 +4,7 @@ This repository contains a skeleton to setup the [LoRa Server](https://www.loras
 project using [docker-compose](https://docs.docker.com/compose/).
 
 **Note:** Please use this `docker-compose.yml` file as a starting point for testing
-but keep in mind that for production usage it might need modifications. 
+but keep in mind that for production usage it might need modifications.
 
 ## Directory layout
 
@@ -40,6 +40,10 @@ To start all the LoRa Server components, simply run:
 
 ```bash
 $ docker-compose up
+```
+or specified compose-file
+```bash
+$ docker-compose -f file_name up
 ```
 
 **Note:** during the startup of services, it is normal to see the following errors:

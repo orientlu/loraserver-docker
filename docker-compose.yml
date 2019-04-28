@@ -2,9 +2,13 @@ version: "3"
 
 services:
   loraserver:
-    image: loraserver/loraserver:2
+    image: orientludocker/loraserver:${run_ver}
     volumes:
       - ./configuration/loraserver:/etc/loraserver
+    depends_on:
+      - redis
+      - postgresql
+      - mosquitto
 
   appserver:
     image: loraserver/lora-app-server:2
@@ -14,32 +18,46 @@ services:
       - ./configuration/lora-app-server:/etc/lora-app-server
 
   gatewaybridge:
-    image: loraserver/lora-gateway-bridge:2
+    image: orientludocker/lora-gateway-bridge:${run_ver}
     ports:
       - 1700:1700/udp
     volumes:
       - ./configuration/lora-gateway-bridge:/etc/lora-gateway-bridge
+    depends_on:
+      - mosquitto
+
+  coordinator:
+    image: orientludocker/lora-coordinator:${run_ver}
+    volumes:
+      - ./configuration/lora-coordinator:/etc/lora-coordinator
+    depends_on:
+      - redis
+      - mosquitto
 
   geoserver:
     image: loraserver/lora-geo-server:2
     volumes:
       - ./configuration/lora-geo-server:/etc/lora-geo-server
 
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+      - 1883:1883
+
   postgresql:
     image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
     volumes:
       - ./configuration/postgresql/initdb:/docker-entrypoint-initdb.d
       - postgresqldata:/var/lib/postgresql/data
 
   redis:
     image: redis:4-alpine
+    ports:
+      - 6379:6379
     volumes:
       - redisdata:/data
-
-  mosquitto:
-    image: eclipse-mosquitto
-    ports:
-      - 1883:1883
 
 volumes:
   postgresqldata:
